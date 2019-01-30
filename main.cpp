@@ -1,7 +1,20 @@
 #include <QCoreApplication>
 #include <iostream>
+#include <vector>
 using namespace std;
 char board[3][3] = {{' ',' ',' '},{' ',' ',' '},{' ',' ',' '}};
+
+struct node{
+    int x;
+    int y;
+};
+
+struct state_action{
+    char state_board[3][3];
+    double state_value[3][3];
+};
+vector<state_action> my_table;
+
 void show_map();
 bool static_player_act(char my_shape);
 
@@ -20,8 +33,16 @@ bool normal_move_act(char my_shape);
 bool game_ends();
 bool side_win(char shape);
 bool draw_check();
+
+
+
+bool qlearning_player_act(char my_shape);
+int get_state_index();
+void random_move(char my_shape);
+
 int main()
 {
+    my_table.clear();
     show_map();
     int turn = 0;
     while(!game_ends()){
@@ -199,7 +220,6 @@ bool normal_move_act(char my_shape){
     }
     return false;
 }
-
 bool lost_check_act(char my_shape){
     if(lost_row_check_act(my_shape)){
         return true;
@@ -396,6 +416,52 @@ bool draw_check(){
     }
     return no_vacant_left;
 }
+bool qlearning_player_act(char my_shape){
+
+}
+int get_state_index(){
+    for(int n = 0 ; n < my_table.size() ; n++){
+        bool diff = false;
+        for(int i = 0 ; i < 3 ; i++){
+            for(int j = 0 ; j < 3 ; j++){
+                if(board[i][j] != my_table.at(n).state_board[i][j]){
+                    diff = true;
+                    break;
+                }
+            }
+            if(diff){
+                break;
+            }
+        }
+        if(!diff){
+            return n;
+        }
+    }
+    return -1;
+}
+void random_move(char my_shape){
+    vector <node> vacants;
+    vacants.clear();
+    for(int i = 0 ; i < 3 ; i++){
+        for(int j = 0 ; j < 3 ; j++){
+            if(board[i][j] == ' '){
+                node tmp;
+                tmp.x = i;
+                tmp.y = j;
+                vacants.push_back(tmp);
+            }
+        }
+    }
+    int random_index = rand()%vacants.size();
+    node chosen_node = vacants.at(random_index);
+    board[chosen_node.x][chosen_node.y] = my_shape;
+
+}
+
+
+
+
+
 
 
 
