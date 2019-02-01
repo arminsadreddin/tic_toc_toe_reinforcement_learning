@@ -15,7 +15,7 @@ struct node{
 int q_agent_wins = 0;
 
 double alpha = 0.5;
-double gamma = 0.9;
+double gamma = 0.5;
 
 struct state_action{
     char state_board[3][3];
@@ -99,6 +99,10 @@ int main()
     cout << "wins : "<<q_agent_wins<<endl;
     return 0;
 }
+
+
+
+
 void show_map(){
     cout << "-------"<<endl;
     for(int row = 0 ; row < 3 ; row++){
@@ -496,7 +500,7 @@ bool qlearning_player_act(char my_shape){
     cout << "reward : "<<reward<<endl;
     cout << "state value :"<<state_value<<endl;
 
-    my_table.at(index).state_value[agent_action.x][agent_action.y] = reward +  (gamma * (state_value));
+    my_table.at(index).state_value[agent_action.x][agent_action.y] = 0.5 * (reward +  (gamma * (state_value))) + 0.5 * my_table.at(index).state_value[agent_action.x][agent_action.y];
 
     for(int i = 0 ; i < 3 ; i ++){
         for(int j = 0 ; j < 3 ; j++){
@@ -588,7 +592,7 @@ double get_state_reward(char my_shape){
         return -5.0;
     }
     if(draw_check()){
-        return 0.0;
+        return -2.0;
     }
     return 0.0;
 }
@@ -600,7 +604,7 @@ void init_board(){
     }
 }
 double get_state_value(char cur_board[3][3]){
-    double state_value = 0;
+    double state_value = 0.0;
     //    char main_board[3][3];
     vector<node> vacants;
     vacants.clear();
@@ -616,6 +620,7 @@ double get_state_value(char cur_board[3][3]){
     }
 
     cout << "v size : "<<vacants.size()<<endl;
+    double best_opp_max = 0.0;
     for(int v = 0 ; v < vacants.size() ; v++){
 
         //double values[3][3];
@@ -642,6 +647,9 @@ double get_state_value(char cur_board[3][3]){
             }
         }
 
+//        if(state_value < best_opp_max){
+//            best_opp_max = state_value;
+//        }
 
     }
 
@@ -770,9 +778,6 @@ int get_board_index(char given_board[3][3]){
     }
     return -1;
 }
-
-
-
 void print_my_table(){
     for(int n = 0 ; n < my_table.size() ; n++){
         for(int i = 0 ; i < 3 ; i++){
